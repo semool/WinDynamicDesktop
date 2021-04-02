@@ -1,30 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using System;
 
 namespace WinDynamicDesktop
 {
-    class UwpHelper
-    {
-        public static string GetCurrentDirectory()
-        {
-            return Windows.Storage.ApplicationData.Current.LocalFolder.Path;
-        }
-    }
-
-    class UwpStartupManager : StartupManager
+    class UwpHelper : PlatformHelper
     {
         private bool startOnBoot;
 
-        public UwpStartupManager(MenuItem startupMenuItem) : base(startupMenuItem)
+        public override string GetLocalFolder()
         {
-            UpdateStatus();
+            return Windows.Storage.ApplicationData.Current.LocalFolder.Path;
         }
 
-        private async void UpdateStatus()
+        public override async void CheckStartOnBoot()
         {
             var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync("WinDynamicDesktopUwp");
 
@@ -32,17 +23,17 @@ namespace WinDynamicDesktop
             {
                 case Windows.ApplicationModel.StartupTaskState.Disabled:
                     startOnBoot = false;
-                    menuItem.Checked = startOnBoot;
                     break;
                 case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
                     startOnBoot = false;
-                    menuItem.Checked = startOnBoot;
+                    MainMenu.startOnBootItem.Enabled = false;
                     break;
                 case Windows.ApplicationModel.StartupTaskState.Enabled:
                     startOnBoot = true;
-                    menuItem.Checked = startOnBoot;
                     break;
             }
+
+            MainMenu.startOnBootItem.Checked = startOnBoot;
         }
 
         public override async void ToggleStartOnBoot()
@@ -56,23 +47,34 @@ namespace WinDynamicDesktop
                 switch (state)
                 {
                     case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
-                        //MessageBox.Show("The task has been disabled by the user");
                         startOnBoot = false;
-                        menuItem.Checked = startOnBoot;
                         break;
                     case Windows.ApplicationModel.StartupTaskState.Enabled:
                         startOnBoot = true;
-                        menuItem.Checked = startOnBoot;
                         break;
                 }
             }
             else
             {
                 startupTask.Disable();
-
                 startOnBoot = false;
-                menuItem.Checked = startOnBoot;
             }
+
+            MainMenu.startOnBootItem.Checked = startOnBoot;
+        }
+
+        public override async void OpenUpdateLink()
+        {
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://downloadsandupdates"));
+        }
+
+        public override async void SetWallpaper(string imageFilename)
+        {
+            var uri = new Uri("ms-appdata:///local/themes/" + ThemeManager.currentTheme.themeId + "/" + imageFilename);
+            var file = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(uri);
+
+            var profileSettings = Windows.System.UserProfile.UserProfilePersonalizationSettings.Current;
+            await profileSettings.TrySetWallpaperImageAsync(file);
         }
     }
 }

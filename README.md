@@ -1,31 +1,52 @@
+<p align="center">
+<img src="https://github.com/t1m0thyj/WinDynamicDesktop/blob/master/uwp/Images/Square44x44Logo.scale-200.png?raw=true">
+<br/>
+<a href="https://github.com/t1m0thyj/WinDynamicDesktop/releases"><img src="https://img.shields.io/github/downloads/t1m0thyj/WinDynamicDesktop/total.svg?style=flat-square" alt="GitHub releases"></a>
+<a href="https://chocolatey.org/packages/windynamicdesktop"><img src="https://img.shields.io/chocolatey/v/windynamicdesktop?style=flat-square" alt="Chocolatey package"></a>
+<a href="https://ci.appveyor.com/project/t1m0thyj/WinDynamicDesktop?branch=master"><img src="https://img.shields.io/appveyor/build/t1m0thyj/WinDynamicDesktop/master?logo=appveyor&style=flat-square" alt="Build status"></a>
+<br/>
+<a href="https://gitter.im/t1m0thyj/WinDynamicDesktop"><img src="https://img.shields.io/gitter/room/t1m0thyj/WinDynamicDesktop?style=flat-square" alt="Chat on Gitter"></a>
+<a href="https://paypal.me/t1m0thyj"><img src="https://img.shields.io/badge/donate-paypal-brightgreen.svg?logo=paypal&style=flat-square" alt="Donate on PayPal"></a>
+</p>
+
 # WinDynamicDesktop
-Port of macOS Mojave Dynamic Desktop feature to Windows 10
+Port of macOS Mojave Dynamic Desktop feature to Windows 10. Available on GitHub and the Microsoft Store.
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=H8ZZXM9ABRJFU)
+<a href="https://github.com/t1m0thyj/WinDynamicDesktop/releases/latest"><img src="https://github.com/t1m0thyj/WinDynamicDesktop/blob/master/images/download_github.png?raw=true" alt="GitHub download" width="142"></a>
+<a href="//www.microsoft.com/store/apps/9nm8n7dq3z5f?cid=storebadge&ocid=badge"><img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" alt="Microsoft Store" width="142"/></a>
 
-## How do I use this?
+## Themes
 
-The first time you run WinDynamicDesktop, it will automatically download the macOS Mojave wallpapers from [here](https://files.rb.gd/mojave_dynamic.zip) and extract them to your disk. I have not included the files directly in this repository for copyright reasons. If you want to select a different set of images, see the section below for how to do so.
+Pick any of the themes bundled with macOS, or many more themes available for download [here](https://windd.info/themes/)
 
-You will also need to input your location when running the program for the first time. This location is not used for any purpose other than to determine the times of sunrise and sunset where you live.
+![Screenshot of Select Theme window](images/select_theme.png)
 
-After you enter your location, the program will minimize to your system tray and it will run in the background. Right-clicking on the system tray icon opens a menu with options to update the location, start WinDynamicDesktop when Windows boots, or exit the program.
+## Schedule
 
-## Why did you develop this?
+Choose a schedule for cycling through wallpaper images over 24 hours
 
-When the Dynamic Desktop feature was announced for macOS Mojave which shifts through 16 images of the same desert scene taken at different times of day, I wanted to write a Windows program that would do the same thing. Windows has the ability built-in to cycle through different wallpapers, but only at regular intervals, not based on the times of sunrise and sunset. This program adds that feature for the Mojave wallpapers to the Windows desktop.
+![Screenshot of Configure Timing window](images/configure_schedule.png)
 
-## Can I customize the images?
+## Supported Devices
 
-Yes. By default WinDynamicDesktop uses the Mojave wallpapers, but if you create an `images.conf` file in the same folder as the EXE you can customize the images that are used. The default `images.conf` can be found [here](src/images.conf). It is formatted in JSON and must contain the following values:
+WinDynamicDesktop is developed primarily for Windows 10, but should run on any version of Windows with .NET Framework 4.5 or newer installed. If your version of .NET Framework is too old, you can install a newer one from [here](https://www.microsoft.com/net/download).
 
-* `themeName` - String which is the name of the wallpaper theme shown in the user interface
-* `imagesZipUri` - String containing URL to download images.zip file from, or *null* if the content in the images subfolder is provided by the user
-* `imageFilename` - String containing the filename of each wallpaper image, with `{0}` substituted for the image number
-* `dayImageList` - Array of numbers listing the image numbers to display throughout the day (between sunrise and sunset)
-* `nightImageList` - Array of numbers listing the image numbers to display throughout the night (between sunset and sunrise)
+## Resources
 
-## Legal and privacy stuff
-I do not own the Mojave wallpaper pictures used by WinDynamicDesktop, they belong to Apple. The icon used in this program was made by [Roundicons](https://www.flaticon.com/authors/roundicons) from [flaticon.com](https://www.flaticon.com/) and is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
+* [Get Help](https://github.com/t1m0thyj/WinDynamicDesktop/wiki)
+* [Download Themes](https://windd.info/themes/)
+* [Download Scripts](https://windd.info/scripts/)
+* [Translate on POEditor](https://poeditor.com/join/project/DEgfVpyuiK)
+* [.ddw Theme Creator](https://ddw-theme-creator.vercel.app/) (thanks @gdstewart)
 
-When you enter your location, WinDynamicDesktop uses the [LocationIQ service](https://locationiq.org/) to convert your location to latitude and longitude. Your location info is never sent anywhere without your consent.
+## Known Issues
+
+* [Wallpaper fit not remembered in Microsoft Store app](https://github.com/t1m0thyj/WinDynamicDesktop/wiki/Known-issues#wallpaper-fit-not-saved-with-multiple-monitors)
+* [Wallpaper gets stuck and won't update](https://github.com/t1m0thyj/WinDynamicDesktop/wiki/Known-issues#wallpaper-gets-stuck-and-wont-update)
+
+## Disclaimers
+
+* Wallpaper images are not owned by me, they belong to Apple
+* [LocationIQ API](https://locationiq.org/) is used when your enter your location, to convert it to latitude and longitude
+* Microsoft Store app uses the Windows location API if permission is granted
+* App icon made by [Roundicons](https://www.flaticon.com/authors/roundicons) from [flaticon.com](https://www.flaticon.com/) and is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)

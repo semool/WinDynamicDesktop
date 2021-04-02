@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using System;
 using System.IO;
+using System.Windows.Forms;
 
 namespace WinDynamicDesktop
 {
@@ -13,36 +14,37 @@ namespace WinDynamicDesktop
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            Environment.CurrentDirectory = UwpDesktop.GetCurrentDirectory();
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(
-                OnUnhandledException);
+            string localFolder = UwpDesktop.GetHelper().GetLocalFolder();
+            Application.ThreadException += (sender, e) => ErrorHandler.LogError(localFolder, e.Exception);
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+                ErrorHandler.LogError(localFolder, e.ExceptionObject as Exception);
+
+            Directory.SetCurrentDirectory(FindCwd(localFolder));
+            Win32Utils.SetDpiAwareness();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormWrapper());
+            Application.Run(new AppContext(args));
         }
 
-        static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        static string FindCwd(string localFolder)
         {
-            string errorMessage = ((Exception)e.ExceptionObject).ToString() + Environment.NewLine;
-            string logFilename = Environment.GetCommandLineArgs()[0] + ".log";
+            string cwd = localFolder;
+            string pathFile = Path.Combine(localFolder, "WinDynamicDesktop.pth");
 
-            try
+            if (File.Exists(pathFile))
             {
-                File.AppendAllText(logFilename, errorMessage);
+                cwd = Environment.ExpandEnvironmentVariables(File.ReadAllText(pathFile).Trim());
 
-                MessageBox.Show("See the logfile '" + Path.Combine(Directory.GetCurrentDirectory(),
-                    logFilename) + "' for details", "Errors occurred", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                if (!Directory.Exists(cwd))
+                {
+                    Directory.CreateDirectory(cwd);
+                }
             }
-            catch
-            {
-                MessageBox.Show("The logfile '" + Path.Combine(Directory.GetCurrentDirectory(),
-                    logFilename) + "' could not be opened:" + Environment.NewLine + " " + errorMessage,
-                    "Errors occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            return cwd;
         }
     }
 }

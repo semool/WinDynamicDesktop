@@ -1,56 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 using DesktopBridge;
+using System;
 
 namespace WinDynamicDesktop
 {
-    abstract class StartupManager
+    abstract class PlatformHelper
     {
-        public MenuItem menuItem;
+        public abstract string GetLocalFolder();
 
-        public StartupManager(MenuItem startupMenuItem)
-        {
-            menuItem = startupMenuItem;
-        }
+        public abstract void CheckStartOnBoot();
 
         public abstract void ToggleStartOnBoot();
+
+        public abstract void OpenUpdateLink();
+
+        public abstract void SetWallpaper(string imageFilename);
     }
 
     class UwpDesktop
     {
+        private static bool? _isRunningAsUwp;
+        private static PlatformHelper helper;
+
         public static bool IsRunningAsUwp()
         {
-            Helpers helpers = new Helpers();
+            if (!_isRunningAsUwp.HasValue)
+            {
+                Helpers helpers = new Helpers();
+                _isRunningAsUwp = helpers.IsRunningAsUwp();
+            }
 
-            return helpers.IsRunningAsUwp();
+            return _isRunningAsUwp.Value;
         }
 
-        public static string GetCurrentDirectory()
+        public static bool IsUwpSupported()
         {
-            if (!IsRunningAsUwp())
-            {
-                return DesktopHelper.GetCurrentDirectory();
-            }
-            else
-            {
-                return UwpHelper.GetCurrentDirectory();
-            }
+            return Environment.OSVersion.Version.Major >= 10;
         }
 
-        public static StartupManager GetStartupManager(MenuItem startupMenuItem)
+        public static PlatformHelper GetHelper()
         {
-            if (!IsRunningAsUwp())
+            if (helper == null)
             {
-                return new DesktopStartupManager(startupMenuItem);
+                if (!IsRunningAsUwp())
+                {
+                    helper = new DesktopHelper();
+                }
+                else
+                {
+                    helper = new UwpHelper();
+                }
             }
-            else
-            {
-                return new UwpStartupManager(startupMenuItem);
-            }
+
+            return helper;
         }
     }
 }
